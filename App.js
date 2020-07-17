@@ -8,7 +8,11 @@ export default function App() {
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [weather,setWeather] = useState([])
+  const [weather,setWeather] = useState([{
+    main: null,
+    description: null,
+    icon: null
+  }])
   const [main,setMain] = useState([])
 
   useEffect(() => {
@@ -34,22 +38,25 @@ export default function App() {
         }
       })
       setWeather(response.data.weather)
+      
       setMain(response.data.main)
     })()
   },[]);
 
   function update(){
-    alert('teste')
+    alert(weather)
+    console.log(weather[0].description)
   }
 
   let text = ' Waiting ...'
-  let clima = {description: 'teste'}
+  let clima = []
   let clima2 = ''
   
   if (errorMsg){
     text = errorMsg
   } else if (location){
     text = JSON.stringify(location)
+    clima = JSON.stringify(weather[0].description)
     clima2 = JSON.stringify(main)
   };
 
@@ -70,7 +77,7 @@ export default function App() {
     <SafeAreaView style={{ flex:1 }}>
     <View style={styles.container}>
       <Text style={styles.dateTime}>{getCurrentDate()}</Text>
-      <Text>{clima.description}</Text>
+      <Text>{clima}</Text>
       <Text>{clima2}</Text>
       <StatusBar style="auto" />
     </View>
