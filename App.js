@@ -1,19 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState,useEffect } from 'react';
-import { StyleSheet, Text, View , SafeAreaView, Button, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View , SafeAreaView, Image,TouchableOpacity, ImageBackground} from 'react-native';
 import * as Location from 'expo-location';
 import api from '././src/services/api'
+import background from './src/assets/sky.png'
 
 export default function App() {
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [weather,setWeather] = useState([{
-    main: null,
     description: null,
     icon: null
   }])
-  const [main,setMain] = useState([])
+
+  const [main,setMain] = useState([{
+    temp: null,
+    feels_like: null,
+    temp_min: null,
+    temp_max: null,
+    humidity: null
+  }])
 
   useEffect(() => {
     (async () => {
@@ -38,26 +45,20 @@ export default function App() {
         }
       })
       setWeather(response.data.weather)
-      
       setMain(response.data.main)
     })()
   },[]);
 
   function update(){
     alert(weather)
-    console.log(weather[0].description)
   }
 
   let text = ' Waiting ...'
-  let clima = []
-  let clima2 = ''
   
   if (errorMsg){
     text = errorMsg
   } else if (location){
-    text = JSON.stringify(location)
-    clima = JSON.stringify(weather[0].description)
-    clima2 = JSON.stringify(main)
+  
   };
 
   const getCurrentDate = ()=>{
@@ -74,14 +75,46 @@ export default function App() {
 
 
   return (
-    <SafeAreaView style={{ flex:1 }}>
+    <SafeAreaView style={{ flex:1 }}>  
     <View style={styles.container}>
-      <Text style={styles.dateTime}>{getCurrentDate()}</Text>
-      <Text>{clima}</Text>
-      <Text>{clima2}</Text>
-      <StatusBar style="auto" />
-    </View>
+    <ImageBackground style={{width: '100%', height:'100%', opacity: 100}} source={background}>
+      <View style={styles.header}>
+        <View style={styles.headerTwo}>
+          <Text style={{fontSize: 40}}>{(main.temp-273.15).toFixed(2)+'ºC'}</Text>
+          <Text style={styles.dateTime}>{getCurrentDate()}</Text>
+        </View>
 
+        <View style={styles.headerTwo}>
+          <Image style={styles.icon} source={{uri:`http://openweathermap.org/img/wn/${weather[0].icon}.png`}}/>
+          <Text style ={{fontSize: 17, textTransform:'capitalize', fontWeight: 'bold'}}>{(weather[0].description)}</Text>
+        </View>
+      </View>
+
+    <View style={styles.containerInformation}>
+      
+
+      <View style={styles.information}>
+        <Text style={{fontSize: 16, fontWeight:'bold'}}>Temperatura Máxima</Text> 
+        <Text style={{fontSize: 16, fontWeight:'bold'}}>{(main.temp_max-273.15).toFixed(2)+'ºC'}</Text>
+      </View>
+
+      <View style={styles.information}>
+        <Text style={{fontSize: 16, fontWeight:"bold"}}>Temperatura Mínima</Text>  
+        <Text style={{fontSize: 16, fontWeight:"bold"}}>{(main.temp_min-273.15).toFixed(2)+'ºC'}</Text>
+      </View>
+    </View>  
+
+    <View style={styles.containerInformation}>
+      <View style={styles.information}>
+        <Text style={{fontSize: 16, fontWeight:"bold"}}>Sensação Térmica</Text> 
+        <Text style={{fontSize: 16, fontWeight:"bold"}}>{(main.feels_like-273.15).toFixed(2)+'ºC'}</Text>
+      </View>
+
+      <View style={styles.information}>
+        <Text style={{fontSize: 16, fontWeight:"bold"}}>Umidade do Ar</Text>
+        <Text style={{fontSize: 16, fontWeight:"bold"}}>{main.humidity}</Text>
+      </View>
+    </View>
 
     <View style={styles.footer}>
       <Text></Text>
@@ -91,16 +124,50 @@ export default function App() {
       <View style={styles.button}>
         <Text onPress={update} style={styles.buttonText}>Atualizar</Text>
       </View>
-    </TouchableOpacity>
+      </TouchableOpacity>    
+      </ImageBackground>
+    </View> 
   </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    display:'flex',
     alignItems: 'center',
-    padding: 70,
+  },
+
+  containerInformation:{
+    display: 'flex',
+    flexDirection:'row',
+    justifyContent:"space-between",
+    marginTop: 110,
+    paddingHorizontal: 1,
+    marginHorizontal: 20,
+  },
+
+  information: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: "center"
+  },
+
+  imageBackground: {
+    width: 100
+  },
+
+  header:{
+    display:'flex',
+    flexDirection: "row-reverse",
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 50,
+    paddingHorizontal:5,
+    marginHorizontal: 20,
+  },
+
+  headerTwo:{
+    alignItems: 'center',
     justifyContent: 'center',
   },
 
@@ -108,11 +175,16 @@ const styles = StyleSheet.create({
     flex:1,
     width: '100%',
   },
+
   dateTime:{
-    alignItems: 'center',
-    fontSize: 20,
-    marginTop: 20,
-    padding: 20
+    fontSize: 17,
+    width: 150,
+    textAlign: 'center',
+  },
+
+  icon:{
+    width: 100,
+    height: 100,
   },
 
   button: {
