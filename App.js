@@ -61,7 +61,7 @@ export default function App() {
         params: {
           lat:latitude,
           lon: longitude,
-          appid: '16ab16bca622ee871024d4f8d69542d7'
+          appid: '',
         }
       })
       setWeather(response.data.weather)
