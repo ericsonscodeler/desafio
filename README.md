@@ -39,6 +39,7 @@ As seguintes ferramentas foram usadas na construção do projeto:
   })
 ```
 
+![alt text](https://github.com/ericsonscodeler/clima/blob/master/src/assets/clima.PNG?raw=true)
 
 
 
